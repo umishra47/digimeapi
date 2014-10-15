@@ -10,12 +10,12 @@ class Users::PasswordsController < Devise::PasswordsController
 	end
 
 	def update
-	self.resource = resource_class.reset_password_by_token(resource_params)
-	if resource.errors.empty?
-	render :xml => {:message => 'Password updated successfully '},:status => 200
-	else
-	render :xml =>{:message=> resource.errors},:status=> :unprocessable_entity
-	end
+		self.resource = resource_class.reset_password_by_token(resource_params)
+		if resource.errors.empty?
+			render :xml => {:message => 'Password updated successfully '},:status => 200
+		else
+			render :xml =>{:message=> resource.errors},:status=> :unprocessable_entity
+		end
 	end
 
 end

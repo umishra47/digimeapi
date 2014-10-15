@@ -23,14 +23,44 @@ class Users::SessionsController < Devise::SessionsController
     # sign_in(resource_name, resource)
     # yield resource if block_given?
     # respond_with resource, location: after_sign_in_path_for(resource)
+
+    # resource = warden.authenticate!(:scope => resource_name, :store => !(request.format.xml?), :recall => "#{controller_path}#invalid_login_attempt")
+  	# sign_in(resource_name, resource)
+  	# render xml: {
+    #  	:response => 'ok',
+    #  	:user_email => current_user.email,
+    #  	:user_token => current_user.authentication_token,
+    #  	:id => current_user.id
+  	#  } ,:status => 200
     resource = warden.authenticate!(:scope => resource_name, :store => !(request.format.xml?), :recall => "#{controller_path}#invalid_login_attempt")
-	sign_in(resource_name, resource)
-	render xml: {
-	:response => 'ok',
-	:user_email => current_user.email,
-	:user_token => current_user.authentication_token,
-	:id => current_user.id
-	} ,:status => 200
+    set_flash_message(:notice, :signed_in) if is_navigational_format?
+    sign_in(resource_name, resource)
+    yield resource if block_given?
+    respond_to do |format|
+      format.html do
+        respond_with resource, location: after_sign_in_path_for(resource)
+      end
+      format.json do
+        render json: {
+           :response => 'ok',
+           :user_email => current_user.email,
+           :user_token => current_user.authentication_token,
+           :id => current_user.id
+           :status => :ok
+          }
+        return
+      end
+      format.xml do
+        render xml: {
+           :response => 'ok',
+           :user_email => current_user.email,
+           :user_token => current_user.authentication_token,
+           :id => current_user.id
+           :status => :ok
+          }
+        return
+      end
+    end
   end
 
   def ensure_params_exist
