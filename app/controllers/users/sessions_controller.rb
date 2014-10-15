@@ -46,8 +46,7 @@ class Users::SessionsController < Devise::SessionsController
            :user_email => current_user.email,
            :user_token => current_user.authentication_token,
            :id => current_user.id
-           :status => :ok
-          }
+           },:status => :ok
         return
       end
       format.xml do
@@ -56,8 +55,7 @@ class Users::SessionsController < Devise::SessionsController
            :user_email => current_user.email,
            :user_token => current_user.authentication_token,
            :id => current_user.id
-           :status => :ok
-          }
+           }, :status => :ok
         return
       end
     end
