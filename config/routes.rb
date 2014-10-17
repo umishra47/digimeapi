@@ -2,10 +2,17 @@ Rails.application.routes.draw do
   get 'home/index'
 
   devise_for :users,controllers: {sessions: "users/sessions"}
-  # The priority is based upon order of creation: first created -> highest priority.
+  # The priority is based upon order of creation: first created -> highest priority.    
   # See how all your routes lay out with "rake routes".
 
   # You can have the root of your site routed with "root"
+
+  devise_scope :user do
+    post "forget_password" => 'users/passwords#create'
+    put  "update_password" => 'users/passwords#update'
+  end
+
+
  root 'home#index'
 
   # Example of regular route:

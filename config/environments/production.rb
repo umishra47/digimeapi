@@ -32,6 +32,9 @@ Rails.application.configure do
   # Generate digests for assets URLs.
   config.assets.digest = true
 
+  # Version of your assets, change this if you want to expire all your assets.
+  config.assets.version = '1.0'
+
   # `config.assets.precompile` has moved to config/initializers/assets.rb
 
   # Specifies the header that your server uses for sending files.
@@ -79,4 +82,18 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+
+  config.action_mailer.default_url_options = {:host => "digimeapi.herokuapp.com"}  
+ 
+  config.action_mailer.delivery_method = :smtp
+  
+  config.action_mailer.smtp_settings = {
+      address:              'smtp.gmail.com',
+      port:                 587,
+      domain:               'digimeapi.herokuapp.com',
+      user_name:            'mmunam@enbake.com',
+      password:             'enbake_123',
+      authentication:       'plain',
+      enable_starttls_auto: true  
+  }
 end
