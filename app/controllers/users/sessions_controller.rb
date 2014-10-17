@@ -8,7 +8,6 @@ class Users::SessionsController < Devise::SessionsController
   before_filter :ensure_params_exist, :except => [:destroy]
   acts_as_token_authentication_handler_for User, :except=>[:create]
   # skip_before_filter  :verify_authenticity_token
-
   respond_to :xml
 
   # GET /resource/sign_in
