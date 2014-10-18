@@ -4,4 +4,9 @@ class User < ActiveRecord::Base
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
+
+
+  def send_reset_password_instructions_mail
+    UserMailer.password_instruction_email(self).deliver
+  end
 end

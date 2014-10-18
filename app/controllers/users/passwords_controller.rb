@@ -5,6 +5,7 @@ class Users::PasswordsController < Devise::PasswordsController
 	def create
 		
 				@user = User.send_reset_password_instructions(params[:user])
+				# @user = User.send_reset_password_instructions_mail(params[:user])
 		if successfully_sent?(@user)
 			render :xml =>{:message=> 'Confirmation message sent'}, :status => 200
 		else
