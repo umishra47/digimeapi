@@ -6,7 +6,11 @@ class JobsController < ApplicationController
   def index
     @jobs = Job.all
     respond_to do |format|
-      format.xml { render xml: @jobs }
+      if request.content_type =~ /json/
+        format.json { render json: @jobs }
+      else
+        format.xml { render xml: @jobs }
+      end
     end
   end
 
@@ -29,10 +33,23 @@ class JobsController < ApplicationController
   def create
     @job = Job.new(job_params)
     respond_to do |format|
+      puts "******************"
+      puts"1111111111111111111"
+      puts params.to_yaml
+      puts "******************"
+
       if @job.save
-        format.xml { render xml: @job }
+        if request.content_type =~ /json/
+          format.json { render json: @job }
+        else
+          format.xml { render xml: @job }
+        end
       else
-        format.xml { render xml: @job.errors, status: :unprocessable_entity }
+        if request.content_type =~ /json/
+          format.json { render json: @job.errors, status: :unprocessable_entity }
+        else
+          format.xml { render xml: @job.errors, status: :unprocessable_entity }
+        end
       end
     end
   end
@@ -42,9 +59,17 @@ class JobsController < ApplicationController
   def update
     respond_to do |format|
       if @job.update(job_params)
-        format.xml { render xml: @job }
+        if request.content_type =~ /json/
+          format.json { render json: @job }
+        else
+          format.xml { render xml: @job }
+        end
       else
-        format.xml { render xml: @job.errors, status: :unprocessable_entity }
+        if request.content_type =~ /json/
+          format.json { render json: @job.errors, status: :unprocessable_entity }
+        else
+          format.xml { render xml: @job.errors, status: :unprocessable_entity }
+        end
       end
     end
   end
@@ -57,9 +82,17 @@ class JobsController < ApplicationController
     
     respond_to do |format|
       if @job.destroy
-        format.xml { render xml: "Successfully Deleted", status: :ok }
+        if request.content_type =~ /json/
+          format.json { render json: "Successfully Deleted", status: :ok }
+        else
+          format.xml { render xml: "Successfully Deleted", status: :ok }
+        end
       else
-        format.xml { render xml: @job.errors, status: :unprocessable_entity }
+        if request.content_type =~ /json/
+          format.json { render json: @job.errors, status: :unprocessable_entity }
+        else
+          format.xml { render xml: @job.errors, status: :unprocessable_entity }
+        end
       end
     end
   end

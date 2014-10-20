@@ -8,7 +8,7 @@ class Users::SessionsController < Devise::SessionsController
   before_filter :ensure_params_exist, :except => [:destroy]
   acts_as_token_authentication_handler_for User, :except=>[:create]
   # skip_before_filter  :verify_authenticity_token
-  respond_to :xml
+  # respond_to :json
 
   # GET /resource/sign_in
   def new
@@ -33,30 +33,50 @@ class Users::SessionsController < Devise::SessionsController
     #  	:user_token => current_user.authentication_token,
     #  	:id => current_user.id
   	#  } ,:status => 200
-    resource = warden.authenticate!(:scope => resource_name, :store => !(request.format.xml?), :recall => "#{controller_path}#invalid_login_attempt")
+    resource = warden.authenticate!(:scope => resource_name, :store => !(request.format.json?) && !(request.format.xml?), :recall => "#{controller_path}#invalid_login_attempt")
     set_flash_message(:notice, :signed_in) if is_navigational_format?
     sign_in(resource_name, resource)
     yield resource if block_given?
     respond_to do |format|
-      format.xml do
-        render xml: {
-           :response => 'ok',
-           :user_email => current_user.email,
-           :user_token => current_user.authentication_token,
-           :id => current_user.id
-           }, :status => :ok
-        return
+      if request.content_type =~ /json/
+        format.json do
+          render json: {
+             :response => 'ok',
+             :user_email => current_user.email,
+             :user_token => current_user.authentication_token,
+             :id => current_user.id
+             }, :status => :ok
+          return
+        end
+      else
+        format.xml do
+          render xml: {
+             :response => 'ok',
+             :user_email => current_user.email,
+             :user_token => current_user.authentication_token,
+             :id => current_user.id
+             }, :status => :ok
+          return
+        end
       end
     end
   end
 
   def ensure_params_exist
-    	return unless params[:user].blank?
-	render :xml=>{:message=>"missing user login parameter"}, :status=>422
+      return unless params[:user].blank?
+      if request.content_type =~ /json/
+      	render :json=>{:message=>"missing user login parameter"}, :status=>422
+      else
+        render :xml=>{:message=>"missing user login parameter"}, :status=>422
+      end
   end
 
   def invalid_login_attempt
-    render :xml=> {:message=>"Error with your login or password..."}, :status=>401
+      if request.content_type =~ /json/
+        render :json=> {:message=>"Error with your login or password..."}, :status=>401
+      else
+        render :xml=> {:message=>"Error with your login or password..."}, :status=>401
+      end
   end
 
   # DELETE /resource/sign_out
