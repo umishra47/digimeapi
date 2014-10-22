@@ -1,9 +1,16 @@
 Rails.application.routes.draw do
-  resources :jobs
+  # match "/404" => "errors#error404", via: [ :get, :post, :patch, :delete ]
+
+  resources :jobs 
+
+  # resources :users
+
 
   get 'home/index'
 
-  devise_for :users,controllers: {sessions: "users/sessions"}
+  # devise_for :users,controllers: {sessions: "users/sessions"}
+  devise_for :users, :controllers => {:registrations => "registrations", :sessions => "users/sessions"}
+
   # The priority is based upon order of creation: first created -> highest priority.    
   # See how all your routes lay out with "rake routes".
 
@@ -65,4 +72,9 @@ Rails.application.routes.draw do
   #     # (app/controllers/admin/products_controller.rb)
   #     resources :products
   #   end
+
+  unless Rails.application.config.consider_all_requests_local
+    match '*not_found', to: 'errors#error_404'
+  end
+
 end

@@ -8,8 +8,7 @@ class Users::SessionsController < Devise::SessionsController
   before_filter :ensure_params_exist, :except => [:destroy]
   acts_as_token_authentication_handler_for User, :except=>[:create]
   # skip_before_filter  :verify_authenticity_token
-  # respond_to :json
-
+  # respond_to :json , :xml
   # GET /resource/sign_in
   def new
     self.resource = resource_class.new(sign_in_params)
@@ -38,7 +37,6 @@ class Users::SessionsController < Devise::SessionsController
     sign_in(resource_name, resource)
     yield resource if block_given?
     respond_to do |format|
-      if request.content_type =~ /json/
         format.json do
           render json: {
              :response => 'ok',
@@ -48,7 +46,6 @@ class Users::SessionsController < Devise::SessionsController
              }, :status => :ok
           return
         end
-      else
         format.xml do
           render xml: {
              :response => 'ok',
@@ -58,25 +55,21 @@ class Users::SessionsController < Devise::SessionsController
              }, :status => :ok
           return
         end
-      end
     end
   end
 
   def ensure_params_exist
       return unless params[:user].blank?
       if request.content_type =~ /json/
-      	render :json=>{:message=>"missing user login parameter"}, :status=>422
+        render :json=>{:message=>"missing user login parameter"}, :status=>422
       else
         render :xml=>{:message=>"missing user login parameter"}, :status=>422
       end
   end
 
   def invalid_login_attempt
-      if request.content_type =~ /json/
         render :json=> {:message=>"Error with your login or password..."}, :status=>401
-      else
         render :xml=> {:message=>"Error with your login or password..."}, :status=>401
-      end
   end
 
   # DELETE /resource/sign_out
